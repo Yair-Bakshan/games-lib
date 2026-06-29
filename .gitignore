@@ -1,0 +1,15 @@
+# Build artifacts
+objects/
+*.o
+*.d
+
+# Compiled binaries / packaged build folders
+builds/
+game
+game.exe
+
+# Editor / OS noise
+.vscode/
+*.swp
+*~
+.DS_Store
