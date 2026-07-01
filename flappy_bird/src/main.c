@@ -1,9 +1,12 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "audio.h"
+#include "font.h"
 #include "pipes.h"
 #include "vector.h"
 #include "entity.h"
@@ -12,6 +15,7 @@
 #define NAME "Flappy Bird"
 #define PIPES_AMOUNT 3
 const Vector2 WINDOW_SIZE = {800, 800};
+const Vector2 SCORE_POS = {400, 50};
 
 int main(void) {
     // 1. Initialize SDL
@@ -42,6 +46,18 @@ int main(void) {
         return 1;
     }
 
+    if(!audio_init()) {
+        SDL_Log("Mix_OpenAudio failed: %s", Mix_GetError());
+        IMG_Quit(); SDL_Quit();
+        return 1;
+    }
+
+    if(!font_init()) {
+        SDL_Log("TTF_Init failed: %s", TTF_GetError());
+        IMG_Quit(); SDL_Quit();
+        return 1;
+    }
+
     // 4. Create a renderer
     SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
     if (!ren) {
@@ -55,12 +71,7 @@ int main(void) {
     // 5. Enable Blend
     SDL_SetRenderDrawBlendMode(ren, SDL_BLENDMODE_BLEND);
 
-    bool running = true;
-    bool pressed = false;
-
-    Uint32 last = SDL_GetTicks();
-    SDL_Event e;
-
+    
     SDL_Texture *pipes_tex = IMG_LoadTexture(ren, "res/Pipe.png");
     if (!pipes_tex) {
         SDL_Log("Failed to load Player.png: %s", IMG_GetError());
@@ -69,16 +80,31 @@ int main(void) {
         IMG_Quit(); SDL_Quit();
         return 1;
     }
+    
+    bool running = true;
+    bool pressed = false;
+
+    char score[20];
+    Uint32 last = SDL_GetTicks();
+    SDL_Event e;
 
     Pipes pipes[PIPES_AMOUNT];
 
     for (int i = 0; i < PIPES_AMOUNT; i++)
         set_pipes(&pipes[i], pipes_tex, &WINDOW_SIZE , i + 1);
 
-    Flappy plr = {{.pos = get_center(&WINDOW_SIZE), .scale = {75, 50}}, 0};
-    bool tex_set = set_texture(&plr.entity, "res/Flappy.png", ren);
+    Music track;
+    load_sound(&FLAP_SFX, "res/sfx_wing.wav");
+    load_sound(&SCORE_SFX, "res/sfx_point.wav");
+    load_music(&track, "res/track.ogg");
+    play_music(&track);
 
-    if(!tex_set) {
+    Font font;
+    load_font(&font, &(SDL_Color){255, 255, 255, 255}, 80, "res/font.ttf");
+
+    Flappy plr;
+
+    if(!set_flappy(&plr, &WINDOW_SIZE, ren)) {
         SDL_Log("Failed to load res/Flappy.png: %s", IMG_GetError());
         SDL_DestroyRenderer(ren);
         SDL_DestroyWindow(win);
@@ -142,20 +168,33 @@ int main(void) {
             draw_entity(&pipes[i].lower_pipe, ren);
             draw_entity(&pipes[i].upper_pipe, ren);
             move_pipes(&pipes[i], dt);
-            loop_pipes(&pipes[i], &WINDOW_SIZE);
+            loop_pipes(&pipes[i], &plr, &WINDOW_SIZE);
 
             if(check_flappy_collison(&plr, &pipes[i]))
                 running = false;
         }
+
+        snprintf(score, sizeof(score), "%d", plr.score);
+        draw_text(&font, score, &SCORE_POS, ren);
 
         // Present (swap buffers)
         SDL_RenderPresent(ren);
     }
 
     // 7. Cleanup
+    stop_music();
+
+    free_music(&track);
+    free_sound(&SCORE_SFX);
+    free_sound(&FLAP_SFX);
+    free_font(&font);
     SDL_DestroyTexture(pipes_tex); /* shared by all pipes; freed once here */
     destroy_entity(&plr.entity);
+
+    font_quit();
+    audio_quit();
     IMG_Quit();
+    
     SDL_DestroyRenderer(ren);
     SDL_DestroyWindow(win);
     SDL_Quit();
