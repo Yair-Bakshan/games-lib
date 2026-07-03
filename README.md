@@ -1,6 +1,6 @@
 # Games
 
-> **Version 0.9** — actively developed. Audio (Phase 1), font/score display (Phase 2), and sprite animation (Phase 3) are all done. Next up: a second game (**Pong**). See the roadmap below.
+> **Version 0.9** — actively developed. Audio (Phase 1), font/score display (Phase 2), and sprite animation (Phase 3) are all done. Next up: a second game (**Game Jam**). See the roadmap below.
 
 A small collection of games written in C with SDL2, sharing a common library.
 
