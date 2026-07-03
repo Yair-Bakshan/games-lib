@@ -3,18 +3,6 @@
 #include "vector.h"
 #include "entity.h"
 
-/* Texture Handling */
-bool set_texture(Entity *entity, const char *file, SDL_Renderer *ren) {
-    entity->tex = IMG_LoadTexture(ren, file);
-    entity->owns_tex = (entity->tex != NULL);
-    return entity->tex != NULL;
-}
-
-void use_texture(Entity *dst, Entity *src) {
-    dst->tex = src->tex;
-    dst->owns_tex = false; /* shared reference, not an owner */
-}
-
 /* Position Handling */
 void add_pos(Entity *entity, Vector2 add) { 
     entity->pos = add_vector2(entity->pos, add);
@@ -34,9 +22,10 @@ void sub_angle(Entity *entity, decimal sub) {
 }
 
 /* Other */
-void draw_entity(Entity* entity, SDL_Renderer *ren) {
-    if (!entity->tex)
-        return;
+void draw_entity(Entity* entity, decimal dt, SDL_Renderer *ren) {
+    if (!entity->sprite) return;
+    if (!entity->sprite->frames)return;
+    update_sprite(entity->sprite, dt);
 
     SDL_Rect dst = {
         (int)(entity->pos.x - entity->scale.x / 2.0f),
@@ -47,7 +36,7 @@ void draw_entity(Entity* entity, SDL_Renderer *ren) {
     
     SDL_RenderCopyEx(
         ren,
-        entity->tex,
+        entity->sprite->frames[entity->sprite->current_frame],
         NULL,       /* source rect — NULL = whole texture             */
         &dst,       /* destination rect                               */
         entity->angle,      /* rotation in degrees, clockwise                 */
@@ -67,11 +56,4 @@ bool check_entities_collision(Entity *a, Entity *b, Vector2 col_scale_a, Vector2
              a->pos.x - ha_x >= b->pos.x + hb_x ||
              a->pos.y + ha_y <= b->pos.y - hb_y ||
              a->pos.y - ha_y >= b->pos.y + hb_y);
-}
-
-void destroy_entity(Entity* entity){
-    if (entity->owns_tex)
-        SDL_DestroyTexture(entity->tex);
-    entity->tex = NULL;
-    entity->owns_tex = false;
 }

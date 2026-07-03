@@ -7,18 +7,20 @@ void font_quit(void) {
     TTF_Quit();
 }
 
-bool load_font(Font *font, SDL_Color *color, int size, const char *file) {
+bool load_font(Font *font, const SDL_Color *color, int size, const char *file) {
+    if (font == NULL || color == NULL) return false;
     font->ttf = TTF_OpenFont(file, size); // Set the ttf
     font->color = *color; // Set the color
     return font->ttf != NULL; // Return if load was succesfull
 }
 void free_font(Font *font) {
+    if (font == NULL) return;
     TTF_CloseFont(font->ttf);
     font->ttf = NULL;
 }
 
 void draw_text(Font *font, const char *text, const Vector2 *pos, SDL_Renderer *ren) {
-    if(font->ttf == NULL) return;
+    if (font == NULL || pos == NULL || font->ttf == NULL) return;
 
     SDL_Surface *surf = TTF_RenderText_Blended(font->ttf, text, font->color);
 

@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include "pipes.h"
@@ -9,12 +8,10 @@ Sound SCORE_SFX;
 
 void set_gap(Pipes *pipes, decimal gap, decimal upwards, const Vector2 *window_size);
 
-void set_pipes(Pipes *pipes, SDL_Texture *tex, const Vector2 *window_size, int index) {
+void set_pipes(Pipes *pipes, Sprite *spr, const Vector2 *window_size, int index) {
     /* 1. Set textures first (shared, non-owning: main owns the texture) */
-    pipes->lower_pipe.tex = tex;
-    pipes->lower_pipe.owns_tex = false;
-    pipes->upper_pipe.tex = tex;
-    pipes->upper_pipe.owns_tex = false;
+    pipes->lower_pipe.sprite = spr;
+    pipes->upper_pipe.sprite = spr;
 
     /* 2. Set the positions (without gaps) */
     // Lower pipe

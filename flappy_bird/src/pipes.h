@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include "vector.h"
 #include "entity.h"
+#include "sprite.h"
 #include "flappy.h"
 #include "audio.h"
 
@@ -23,7 +24,7 @@ typedef struct {
     bool passed;
 } Pipes;
 
-void set_pipes(Pipes *pipes, SDL_Texture *tex, const Vector2 *window_size, int index);
+void set_pipes(Pipes *pipes, Sprite *spr, const Vector2 *window_size, int index);
 void move_pipes(Pipes *pipes, decimal dt);
 void loop_pipes(Pipes *pipes, Flappy *plr, const Vector2 *window_size);
 bool check_flappy_collison(Flappy *plr, Pipes *pipes);

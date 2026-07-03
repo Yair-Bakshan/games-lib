@@ -1,5 +1,6 @@
 #include "vector.h"
 #include "entity.h"
+#include "sprite.h"
 #include "audio.h"
 
 #ifndef FLAPPY
@@ -19,7 +20,7 @@ typedef struct {
 } Flappy;
 
 bool check_height(Flappy *plr, const Vector2 *window_size);
-bool set_flappy(Flappy *plr, const Vector2 *window_size, SDL_Renderer *ren);
+void set_flappy(Flappy *plr, Sprite *spr, const Vector2 *window_size);
 void apply_gravity(Flappy *plr, decimal dt);
 void update_angle(Flappy *plr);
 void jump(Flappy *plr);

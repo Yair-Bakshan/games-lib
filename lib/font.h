@@ -14,8 +14,8 @@ typedef struct {
 bool font_init(void);
 void font_quit(void);
 
-// Loading/Free font
-bool load_font(Font *font, SDL_Color *color, int size, const char *file);
+// Loading/Freeing font
+bool load_font(Font *font, const SDL_Color *color, int size, const char *file);
 void free_font(Font *font);
 
 // Draw font
