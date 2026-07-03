@@ -1,6 +1,6 @@
 # Games
 
-> **Version 0.7** — actively developed. Audio (Phase 1) and font/score display (Phase 2) are done; sprite support (Phase 3) is next. See the roadmap below.
+> **Version 0.9** — actively developed. Audio (Phase 1), font/score display (Phase 2), and sprite animation (Phase 3) are all done. Next up: a second game (**Pong**). See the roadmap below.
 
 A small collection of games written in C with SDL2, sharing a common library.
 
@@ -8,7 +8,7 @@ A small collection of games written in C with SDL2, sharing a common library.
 
 ```
 Games/
-├── lib/            shared game library (vector math, entity, audio, font)
+├── lib/            shared game library (vector math, entity, sprite, audio, font)
 └── flappy_bird/    Flappy Bird clone built on lib/
     ├── src/        game code
     ├── res/        textures, sounds, music, font
@@ -54,15 +54,15 @@ make windows    # produces a self-contained builds/windows/ (game.exe + DLLs + r
 ## Roadmap
 
 ```
- v0.5          Phase 1        Phase 2        Phase 3
-  |                |              |              |
-  ●────────────────●──────────────●──────────────○
-  |                |              |              |
-Done            Audio           Font          Sprite
-               Support        Support        Support
-              (done)          (done)         + Pong?
+ v0.5          Phase 1        Phase 2        Phase 3        Next
+  |                |              |              |            |
+  ●────────────────●──────────────●──────────────●───────────○
+  |                |              |              |            |
+Done            Audio           Font          Sprite        Game Jam
+               Support        Support       Animation     (2nd game)
+              (done)          (done)         (done)
 
-[██████████████████████████████████░░░░░░░░░░░░]  3 / 4 milestones
+[██████████████████████████████████████████████]  4 / 4 milestones
 ```
 
 ### v0.5 — Foundation ✅
@@ -77,7 +77,10 @@ Done            Audio           Font          Sprite
 - Added SDL2_ttf to `lib/` (`font.h` — `Font`, `draw_text`)
 - Live score display
 
-### Phase 3 — Sprite Support (next)
-- Rework texture handling in `lib/` (currently entity owns a single static texture)
-- Sprite sheets, animation frames, multiple textures per entity
-- Possibly start **Pong**
+### Phase 3 — Sprite Animation ✅
+- Added `sprite.h` to `lib/` (`Sprite` — multi-frame textures with timed animation)
+- `Entity` now references a `Sprite` instead of owning a raw texture; ownership is explicit in the game
+- Animated 3-frame flappy bird
+
+### Next — Game Jam
+- I will find a game jam and start a second game on the shared `lib/` to prove out reuse
